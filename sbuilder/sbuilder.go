@@ -3,7 +3,14 @@ package sbuilder
 import (
 	"fmt"
 	"strings"
+	"sync"
 )
+
+var bpool = sync.Pool{
+	New: func() interface{} {
+		return new(strings.Builder)
+	},
+}
 
 // Misleading
 func StringJoin(ss []string) string {
@@ -66,4 +73,17 @@ func StringBuilderBytesFixedSize(bbb [][]byte, size int) string {
 		_, _ = b.Write([]byte{10})
 	}
 	return b.String()
+}
+
+func StringBuilderFixedSizePooled(ss []string, size int) (str string) {
+	b := bpool.Get().(*strings.Builder)
+	b.Grow(size + len(ss)) // for newline
+	for i, ln := 0, len(ss); i < ln; i++ {
+		_, _ = b.WriteString(ss[i])
+		_, _ = b.WriteString("\n")
+	}
+	str = b.String()
+	b.Reset()
+	bpool.Put(b)
+	return
 }

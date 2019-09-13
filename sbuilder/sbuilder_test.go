@@ -142,3 +142,22 @@ func BenchmarkStringBuilderBytesFixedSizeParallel(b *testing.B) {
 		}
 	})
 }
+
+func BenchmarkStringBuilderFixedSizePooledParallel(b *testing.B) {
+	b.StopTimer()
+	cnt := 0
+	for _, line := range arrstr {
+		cnt += len([]byte(line))
+	}
+	b.StartTimer()
+
+	b.ReportAllocs()
+	b.SetParallelism(100)
+	b.RunParallel(func(pb *testing.PB) {
+		var ret string
+		for pb.Next() {
+			ret = StringBuilderFixedSizePooled(arrstr, cnt)
+			_str = ret
+		}
+	})
+}
