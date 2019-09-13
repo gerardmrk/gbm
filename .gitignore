@@ -8,6 +8,9 @@
 
 # binaries dir
 .bin/
+profile_cpu.out
+*.test
+.artifacts
 
 # ******************************************************************************
 # IDE Files

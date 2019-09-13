@@ -31,9 +31,21 @@ they think it's alright to act like a dickhead`
 
 var byt = []byte(str)
 
-var arr = strings.Split(str, "\n")
+var arrstr = strings.Split(str, "\n")
 
 var _str string //nolint
+
+func BenchmarkStringJoinParallel(b *testing.B) {
+	b.ReportAllocs()
+	b.SetParallelism(100)
+	b.RunParallel(func(pb *testing.PB) {
+		var ret string
+		for pb.Next() {
+			ret = StringJoin(arrstr)
+			_str = ret
+		}
+	})
+}
 
 func BenchmarkStringConcatParallel(b *testing.B) {
 	b.ReportAllocs()
@@ -41,7 +53,19 @@ func BenchmarkStringConcatParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		var ret string
 		for pb.Next() {
-			ret = StringConcat(arr)
+			ret = StringConcat(arrstr)
+			_str = ret
+		}
+	})
+}
+
+func BenchmarkStringSprintfParallel(b *testing.B) {
+	b.ReportAllocs()
+	b.SetParallelism(100)
+	b.RunParallel(func(pb *testing.PB) {
+		var ret string
+		for pb.Next() {
+			ret = StringSprintf(arrstr)
 			_str = ret
 		}
 	})
@@ -53,7 +77,26 @@ func BenchmarkStringBuilderParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		var ret string
 		for pb.Next() {
-			ret = StringBuilder(arr)
+			ret = StringBuilder(arrstr)
+			_str = ret
+		}
+	})
+}
+
+func BenchmarkStringBuilderBytesParallel(b *testing.B) {
+	b.StopTimer()
+	var arrbyt [][]byte
+	for _, line := range arrstr {
+		arrbyt = append(arrbyt, []byte(line))
+	}
+	b.StartTimer()
+
+	b.ReportAllocs()
+	b.SetParallelism(100)
+	b.RunParallel(func(pb *testing.PB) {
+		var ret string
+		for pb.Next() {
+			ret = StringBuilderBytes(arrbyt)
 			_str = ret
 		}
 	})
@@ -62,7 +105,7 @@ func BenchmarkStringBuilderParallel(b *testing.B) {
 func BenchmarkStringBuilderFixedSizeParallel(b *testing.B) {
 	b.StopTimer()
 	cnt := 0
-	for _, line := range arr {
+	for _, line := range arrstr {
 		cnt += len([]byte(line))
 	}
 	b.StartTimer()
@@ -72,7 +115,29 @@ func BenchmarkStringBuilderFixedSizeParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		var ret string
 		for pb.Next() {
-			ret = StringBuilderFixedSize(arr, cnt)
+			ret = StringBuilderFixedSize(arrstr, cnt)
+			_str = ret
+		}
+	})
+}
+
+func BenchmarkStringBuilderBytesFixedSizeParallel(b *testing.B) {
+	b.StopTimer()
+	var arrbyt [][]byte
+	cnt := 0
+	for _, line := range arrstr {
+		bline := []byte(line)
+		arrbyt = append(arrbyt, bline)
+		cnt += len(bline)
+	}
+	b.StartTimer()
+
+	b.ReportAllocs()
+	b.SetParallelism(100)
+	b.RunParallel(func(pb *testing.PB) {
+		var ret string
+		for pb.Next() {
+			ret = StringBuilderBytesFixedSize(arrbyt, cnt)
 			_str = ret
 		}
 	})
