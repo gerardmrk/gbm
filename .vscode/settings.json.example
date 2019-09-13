@@ -1,0 +1,38 @@
+{
+	"go.useLanguageServer": true,
+	"go.languageServerFlags": [
+		"-rpc.trace",
+		"serve",
+		"--debug=localhost:6060"
+	],
+	"go.alternateTools": {
+		"go-langserver": "gopls"
+	},
+	"go.languageServerExperimentalFeatures": {
+		"format": true,
+		"autoComplete": true,
+		"goToDefinition": true,
+		"hover": true,
+		"signatureHelp": true,
+		"goToTypeDefinition": true
+	},
+	"go.lintTool": "golangci-lint",
+	"go.lintFlags": [
+		"--fast"
+	],
+	"go.buildOnSave": "off",
+	"go.vetOnSave": "off",
+	"go.autocompleteUnimportedPackages": true,
+	"gopls": {
+		"usePlaceholders": true,
+		"wantCompletionDocumentation": true
+	},
+	"[go]": {
+		"editor.formatOnSave": true,
+		"editor.snippetSuggestions": "none",
+		"editor.codeActionsOnSaveTimeout": 2700,
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": true
+		}
+	}
+}
